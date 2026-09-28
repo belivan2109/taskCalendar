@@ -16,7 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".AddTaskActivity" android:exported="false" />
+        <activity android:name=".TaskDetailsActivity" android:exported="false" />
     </application>
 
 </manifest>
