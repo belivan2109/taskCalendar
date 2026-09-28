@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Календарь задач</string>
+    <string name="task_1">Проснуться</string>
+    <string name="task_2">Позавтракать</string>
+    <string name="task_3">Скачать андроид студио и эмулятор</string>
+    <string name="task_4">Решить модуль 1 задания</string>
+    <string name="task_5">Подготовить отчёт и запушить на гитхаб</string>
+</resources>
