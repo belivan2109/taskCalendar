@@ -18,6 +18,7 @@
         </activity>
         <activity android:name=".AddTaskActivity" android:exported="false" />
         <activity android:name=".TaskDetailsActivity" android:exported="false" />
+        <activity android:name=".DebugActivity" android:exported="false" />
     </application>
 
 </manifest>

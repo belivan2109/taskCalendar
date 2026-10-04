@@ -4,14 +4,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class TaskAdapter(
-    private val tasks: List<Task>,
     private val onClick: (Task) -> Unit
-) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
+) : ListAdapter<Task, TaskAdapter.TaskViewHolder>(DIFF_CALLBACK) {
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Task>() {
+            override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean =
+                oldItem.id == newItem.id
+
+            override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean =
+                oldItem == newItem
+        }
+    }
 
     class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvTitle: TextView = view.findViewById(R.id.tvTitle)
@@ -27,14 +36,12 @@ class TaskAdapter(
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        val task = tasks[position]
+        val task = getItem(position)
         holder.tvTitle.text = task.title
         holder.tvDescription.text = task.description
-        holder.tvDate.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(task.date)
+        holder.tvDate.text = "${task.date} ${task.time}"
         holder.tvStatus.text = if (task.isDone) "☑" else "☐"
 
         holder.itemView.setOnClickListener { onClick(task) }
     }
-
-    override fun getItemCount(): Int = tasks.size
 }

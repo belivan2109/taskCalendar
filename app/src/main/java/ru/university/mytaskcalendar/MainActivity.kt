@@ -2,57 +2,71 @@ package ru.university.mytaskcalendar
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import java.util.Calendar
-import java.util.Date
-import kotlin.jvm.java
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var adapter: TaskAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val tasks = createTestTasks()
+        // Получаем DAO через синглтон AppDatabase
+        val dao = AppDatabase.getDatabase(this).taskDao()
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewTasks)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = TaskAdapter(tasks) { task ->
+        // Создаём адаптер. По клику — открываем экран деталей и передаём id задачи.
+        adapter = TaskAdapter { task ->
             val intent = Intent(this, TaskDetailsActivity::class.java)
             intent.putExtra("task_id", task.id)
             startActivity(intent)
         }
 
+        // Настраиваем RecyclerView
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewTasks)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
+
+        // Подписка на Flow: при любом изменении данных в базе список обновляется автоматически
+        lifecycleScope.launch {
+            dao.getAllTasks().collectLatest { tasks ->
+                adapter.submitList(tasks)
+            }
+        }
+
+        // При первом запуске (если база пуста) — заполняем её стартовыми задачами
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                val existing = dao.getAllTasks().first()
+                if (existing.isEmpty()) {
+                    dao.insert(Task(title = "Сделать модуль 1", description = "Настроить Android Studio и создать проект", date = "2026-10-01", time = "10:00", isDone = true))
+                    dao.insert(Task(title = "Разобрать структуру проекта", description = "Понять, где код, где ресурсы", date = "2026-10-01", time = "14:00"))
+                    dao.insert(Task(title = "Изучить RecyclerView", description = "Разобраться с адаптером и ViewHolder", date = "2026-10-02", time = "11:00"))
+                    dao.insert(Task(title = "Подключить Room", description = "Entity, DAO, Database", date = "2026-10-03", time = "09:00"))
+                    dao.insert(Task(title = "Проверить переходы", description = "Убедиться, что Intent работает", date = "2026-10-04", time = "16:00"))
+                }
+            }
+        }
+
+        // FAB — открывает экран добавления задачи
         val fab = findViewById<FloatingActionButton>(R.id.fabAdd)
         fab.setOnClickListener {
-            val intent = Intent(this, AddTaskActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, AddTaskActivity::class.java))
         }
-    }
 
-    private fun createTestTasks(): List<Task> {
-        val cal = Calendar.getInstance()
-        cal.add(Calendar.DAY_OF_MONTH, 1)
-        val tomorrow = cal.time
-
-        cal.add(Calendar.DAY_OF_MONTH, 2)
-        val inThreeDays = cal.time
-
-        return listOf(
-            Task(6, "Сверстать экран задачи", "Создать разметку XML для отображения деталей задачи", inThreeDays, false),
-            Task(7, "Настроить ViewModel", "Подключить ViewModel и LiveData для хранения данных", inThreeDays, false),
-            Task(8, "Реализовать Room", "Создать базу данных, Entity и DAO для сохранения задач", inThreeDays, false),
-            Task(9, "Добавить навигацию", "Настроить Navigation Component или переходы между экранами", inThreeDays, false),
-            Task(10, "Сделать добавление задач", "Реализовать диалог или экран для создания новой задачи", inThreeDays, false),
-            Task(11, "Сделать удаление задач", "Добавить свайп или кнопку для удаления задачи из списка", inThreeDays, false),
-            Task(12, "Обработать повороты экрана", "Сохранять состояние списка при повороте устройства", inThreeDays, false),
-            Task(13, "Добавить уведомления", "Настроить WorkManager для напоминаний о задачах", inThreeDays, false),
-            Task(14, "Написать unit-тесты", "Покрыть тестами логику ViewModel и базы данных", inThreeDays, false),
-            Task(15, "Подготовить защиту проекта", "Написать README и подготовить презентацию", inThreeDays, false)
-        )
+        // Отладочная кнопка — открывает DebugActivity
+        findViewById<Button>(R.id.btnDebug).setOnClickListener {
+            startActivity(Intent(this, DebugActivity::class.java))
+        }
     }
 }
