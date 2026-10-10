@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import ru.university.mytaskcalendar.Task
 import ru.university.mytaskcalendar.Repository.TaskRepository
+import ru.university.mytaskcalendar.Task
 
 class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
 
@@ -19,20 +19,21 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
         )
 
     fun addTask(task: Task) {
-        viewModelScope.launch {
-            repository.insert(task)
-        }
+        viewModelScope.launch { repository.insert(task) }
     }
 
     fun updateTask(task: Task) {
-        viewModelScope.launch {
-            repository.update(task)
-        }
+        viewModelScope.launch { repository.update(task) }
     }
 
     fun deleteTask(task: Task) {
+        viewModelScope.launch { repository.delete(task) }
+    }
+
+    fun loadTask(taskId: Long, onLoaded: (Task?) -> Unit) {
         viewModelScope.launch {
-            repository.delete(task)
+            val task = repository.getTaskById(taskId)
+            onLoaded(task)
         }
     }
 }

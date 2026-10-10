@@ -18,7 +18,8 @@ import ru.university.mytaskcalendar.TaskAdapter
 import ru.university.mytaskcalendar.Repository.TaskRepository
 import ru.university.mytaskcalendar.ViewModels.TaskViewModel
 import ru.university.mytaskcalendar.ViewModels.TaskViewModelFactory
-
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.appcompat.app.AlertDialog
 class MainActivity : AppCompatActivity() {
 
     private lateinit var adapter: TaskAdapter
@@ -33,16 +34,51 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        adapter = TaskAdapter { task ->
-            val intent = Intent(this, TaskDetailsActivity::class.java)
-            intent.putExtra("task_id", task.id)
-            startActivity(intent)
-        }
+        adapter = TaskAdapter(
+            onClick = { task ->
+                val intent = Intent(this, AddEditTaskActivity::class.java)
+                intent.putExtra("task_id", task.id)
+                startActivity(intent)
+            },
+            onSwipe = { task ->
+                showDeleteConfirmation(task)
+            }
+        )
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewTasks)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0,  // без перетаскивания
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT  // свайп влево и вправо
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean = false
 
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.bindingAdapterPosition
+                val task = adapter.getTaskAt(position)
+
+
+                AlertDialog.Builder(this@MainActivity)
+                    .setTitle(R.string.delete_title)
+                    .setMessage(getString(R.string.delete_message, task.title))
+                    .setPositiveButton(R.string.delete_yes) { _, _ ->
+                        viewModel.deleteTask(task)
+                    }
+                    .setNegativeButton(R.string.delete_no) { _, _ ->
+                        adapter.notifyItemChanged(position)  // возвращение карточки на место
+                    }
+                    .setOnCancelListener {
+                        adapter.notifyItemChanged(position)
+                    }
+                    .show()
+            }
+        })
+        itemTouchHelper.attachToRecyclerView(recyclerView)
         // Подписка на StateFlow из ViewModel
         lifecycleScope.launch {
             viewModel.allTasks.collectLatest { tasks ->
@@ -101,11 +137,22 @@ class MainActivity : AppCompatActivity() {
 
         val fab = findViewById<FloatingActionButton>(R.id.fabAdd)
         fab.setOnClickListener {
-            startActivity(Intent(this, AddTaskActivity::class.java))
-        }
+            val intent = Intent(this, AddEditTaskActivity::class.java)
+            startActivity(intent)
 
+        }
         findViewById<Button>(R.id.btnDebug).setOnClickListener {
             startActivity(Intent(this, DebugActivity::class.java))
         }
+    }
+    private fun showDeleteConfirmation(task: Task) {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.delete_title)
+            .setMessage(getString(R.string.delete_message, task.title))
+            .setPositiveButton(R.string.delete_yes) { _, _ ->
+                viewModel.deleteTask(task)
+            }
+            .setNegativeButton(R.string.delete_no, null)
+            .show()
     }
 }

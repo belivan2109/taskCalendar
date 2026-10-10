@@ -7,9 +7,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import ru.university.mytaskcalendar.Task
 
 class TaskAdapter(
-    private val onClick: (Task) -> Unit
+    private val onClick: (Task) -> Unit,
+    private val onSwipe: (Task) -> Unit
 ) : ListAdapter<Task, TaskAdapter.TaskViewHolder>(DIFF_CALLBACK) {
 
     companion object {
@@ -44,4 +46,6 @@ class TaskAdapter(
 
         holder.itemView.setOnClickListener { onClick(task) }
     }
+
+    fun getTaskAt(position: Int): Task = getItem(position)
 }
