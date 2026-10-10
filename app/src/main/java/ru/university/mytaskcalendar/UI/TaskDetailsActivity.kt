@@ -1,8 +1,9 @@
-package ru.university.mytaskcalendar
+package ru.university.mytaskcalendar.UI
 
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import ru.university.mytaskcalendar.R
 
 class TaskDetailsActivity : AppCompatActivity() {
 

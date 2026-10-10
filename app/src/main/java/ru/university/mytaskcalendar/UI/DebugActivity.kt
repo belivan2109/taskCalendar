@@ -1,4 +1,4 @@
-package ru.university.mytaskcalendar
+package ru.university.mytaskcalendar.UI
 
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +9,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import ru.university.mytaskcalendar.Room.AppDatabase
+import ru.university.mytaskcalendar.R
+import ru.university.mytaskcalendar.Task
 
 class DebugActivity : AppCompatActivity() {
 
@@ -23,9 +26,30 @@ class DebugActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnAddTestTasks).setOnClickListener {
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
-                    dao.insert(Task(title = "Тест 1", description = "Первая", date = "2026-10-03", time = "10:00"))
-                    dao.insert(Task(title = "Тест 2", description = "Вторая", date = "2026-10-03", time = "12:00"))
-                    dao.insert(Task(title = "Тест 3", description = "Третья", date = "2026-10-04", time = "09:00"))
+                    dao.insert(
+                        Task(
+                            title = "Тест 1",
+                            description = "Первая",
+                            date = "2026-10-03",
+                            time = "10:00"
+                        )
+                    )
+                    dao.insert(
+                        Task(
+                            title = "Тест 2",
+                            description = "Вторая",
+                            date = "2026-10-03",
+                            time = "12:00"
+                        )
+                    )
+                    dao.insert(
+                        Task(
+                            title = "Тест 3",
+                            description = "Третья",
+                            date = "2026-10-04",
+                            time = "09:00"
+                        )
+                    )
                 }
                 Log.d(TAG, "3 задачи добавлены")
             }

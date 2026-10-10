@@ -9,16 +9,16 @@
         android:theme="@style/Theme.Material3.DayNight.NoActionBar">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".UI.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AddTaskActivity" android:exported="false" />
-        <activity android:name=".TaskDetailsActivity" android:exported="false" />
-        <activity android:name=".DebugActivity" android:exported="false" />
+        <activity android:name=".UI.AddTaskActivity" android:exported="false" />
+        <activity android:name=".UI.TaskDetailsActivity" android:exported="false" />
+        <activity android:name=".UI.DebugActivity" android:exported="false" />
     </application>
 
 </manifest>
