@@ -1,4 +1,4 @@
-package ru.university.mytaskcalendar.UI
+package ru.university.mytaskcalendar.ui
 
 import android.content.Intent
 import android.os.Bundle

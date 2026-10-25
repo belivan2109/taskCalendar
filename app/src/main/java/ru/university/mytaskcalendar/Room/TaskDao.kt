@@ -28,4 +28,7 @@ interface TaskDao {
 
     @Query("SELECT * FROM tasks WHERE id = :taskId")
     suspend fun getTaskById(taskId: Long): Task?
+
+    @Query("SELECT DISTINCT date FROM tasks WHERE date LIKE :monthPrefix || '%'")
+    suspend fun getDatesWithTasksForMonth(monthPrefix: String): List<String>
 }

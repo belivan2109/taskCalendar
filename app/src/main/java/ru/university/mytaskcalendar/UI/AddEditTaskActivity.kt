@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 package ru.university.mytaskcalendar.UI
+=======
+package ru.university.mytaskcalendar.ui
+>>>>>>> 4d14543 (6 stage is done)
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -46,11 +50,18 @@ class AddEditTaskActivity : AppCompatActivity() {
         etTime = findViewById(R.id.etTime)
         switchDone = findViewById(R.id.switchDone)
 
+<<<<<<< HEAD
 
         taskId = intent.getLongExtra("task_id", -1L)
 
         if (taskId != -1L) {
 
+=======
+        taskId = intent.getLongExtra("task_id", -1L)
+
+        if (taskId != -1L) {
+            // РЕЖИМ РЕДАКТИРОВАНИЯ
+>>>>>>> 4d14543 (6 stage is done)
             title = getString(R.string.title_edit_task)
             viewModel.loadTask(taskId) { task ->
                 existingTask = task
@@ -63,6 +74,7 @@ class AddEditTaskActivity : AppCompatActivity() {
                 }
             }
         } else {
+<<<<<<< HEAD
             title = getString(R.string.title_add_task)
             val now = Calendar.getInstance()
             etDate.setText(formatDate(now))
@@ -70,6 +82,18 @@ class AddEditTaskActivity : AppCompatActivity() {
         }
 
 
+=======
+            // РЕЖИМ СОЗДАНИЯ
+            title = getString(R.string.title_add_task)
+
+            // Если дата передана из календаря — используем её, иначе сегодняшнюю
+            val presetDate = intent.getStringExtra("preset_date")
+            etDate.setText(presetDate ?: formatDate(Calendar.getInstance()))
+            etTime.setText(formatTime(Calendar.getInstance()))
+        }
+
+        // Клик по полю даты — открываем DatePickerDialog
+>>>>>>> 4d14543 (6 stage is done)
         etDate.setOnClickListener {
             val cal = Calendar.getInstance()
             DatePickerDialog(
@@ -85,6 +109,10 @@ class AddEditTaskActivity : AppCompatActivity() {
             ).show()
         }
 
+<<<<<<< HEAD
+=======
+        // Клик по полю времени — открываем TimePickerDialog
+>>>>>>> 4d14543 (6 stage is done)
         etTime.setOnClickListener {
             val cal = Calendar.getInstance()
             TimePickerDialog(
@@ -97,11 +125,19 @@ class AddEditTaskActivity : AppCompatActivity() {
                 },
                 cal.get(Calendar.HOUR_OF_DAY),
                 cal.get(Calendar.MINUTE),
+<<<<<<< HEAD
                 true
             ).show()
         }
 
 
+=======
+                true // 24-часовой формат
+            ).show()
+        }
+
+        // Кнопка «Сохранить»
+>>>>>>> 4d14543 (6 stage is done)
         findViewById<Button>(R.id.btnSave).setOnClickListener {
             saveTask()
         }
@@ -121,9 +157,15 @@ class AddEditTaskActivity : AppCompatActivity() {
         }
         tilTitle.error = null
 
+<<<<<<< HEAD
         // Валидация даты и времени: задача не может быть в прошлом.
         //    Пропускаем проверку для режима редактирования уже выполненной задачи —
         //    её дата может быть в прошлом, и это нормально.
+=======
+        // 2. Валидация даты и времени: задача не может быть в прошлом.
+        // Пропускаем проверку для режима редактирования уже выполненной задачи —
+        // её дата может быть в прошлом, и это нормально.
+>>>>>>> 4d14543 (6 stage is done)
         val skipDateTimeCheck = existingTask?.isDone == true && isDone
 
         if (!skipDateTimeCheck) {
@@ -134,7 +176,11 @@ class AddEditTaskActivity : AppCompatActivity() {
             }
         }
 
+<<<<<<< HEAD
 
+=======
+        // 3. Сохранение
+>>>>>>> 4d14543 (6 stage is done)
         if (existingTask != null) {
             val updated = existingTask!!.copy(
                 title = title,
