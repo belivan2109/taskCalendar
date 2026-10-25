@@ -17,4 +17,8 @@ class TaskRepository(private val taskDao: TaskDao) {
     suspend fun update(task: Task) = taskDao.update(task)
 
     suspend fun delete(task: Task) = taskDao.delete(task)
+
+    suspend fun getDatesWithTasksForMonth(monthPrefix: String): List<String> =
+        taskDao.getDatesWithTasksForMonth(monthPrefix)
+
 }

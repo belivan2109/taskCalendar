@@ -1,7 +1,39 @@
 <resources>
     <string name="app_name">Календарь задач</string>
-    <string name="add_task_title">Экран добавления задачи</string>
-    <string name="task_details_title">Детали задачи</string>
+
+    <!-- Поля формы -->
+    <string name="hint_title">Название задачи</string>
+    <string name="hint_description">Описание</string>
+    <string name="hint_date">Дата</string>
+    <string name="hint_time">Время</string>
+    <string name="hint_is_done">Выполнено</string>
+
+    <string name="error_invalid_datetime">Некорректная дата или время</string>
+    <string name="error_datetime_in_past">Нельзя создать задачу на прошедшее время</string>
+
+    <string name="title_details">Детали задачи</string>
     <string name="task_id_label">ID задачи: %1$d</string>
+    <!-- Заголовки экранов -->
+    <string name="title_add_task">Новая задача</string>
+    <string name="title_edit_task">Редактирование задачи</string>
+
+    <!-- Кнопки и сообщения -->
+    <string name="btn_save">Сохранить</string>
+    <string name="task_saved">Задача сохранена</string>
+    <string name="error_title_required">Введите название задачи</string>
+
+    <!-- Удаление -->
+    <string name="delete_title">Удалить задачу?</string>
+    <string name="delete_message">Задача «%1$s» будет удалена безвозвратно.</string>
+    <string name="delete_yes">Удалить</string>
+    <string name="delete_no">Отмена</string>
     <string name="tvStatus">☐</string>
+
+    <string name="calendar_title">Календарь</string>
+    <string name="tasks_for_date">Задачи на %1$s</string>
+    <string name="nav_calendar">Календарь</string>
+    <string name="debug">Debug</string>
+    <string name="add_task_title">Добавить задачу</string>
+
+
 </resources>

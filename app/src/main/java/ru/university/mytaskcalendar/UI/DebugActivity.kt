@@ -1,4 +1,4 @@
-package ru.university.mytaskcalendar.UI
+package ru.university.mytaskcalendar.ui
 
 import android.os.Bundle
 import android.util.Log
