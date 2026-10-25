@@ -19,13 +19,6 @@
             </intent-filter>
         </activity>
 
-<<<<<<< HEAD
-        <activity android:name=".UI.TaskDetailsActivity" android:exported="false" />
-        <activity android:name=".UI.DebugActivity" android:exported="false" />
-        <activity
-            android:name=".UI.AddEditTaskActivity"
-            android:exported="false" />
-=======
         <!-- Остальные экраны (открываются только изнутри приложения) -->
         <activity
             android:name=".ui.MainActivity"
@@ -43,7 +36,6 @@
             android:name=".ui.DebugActivity"
             android:exported="false" />
 
->>>>>>> 4d14543 (6 stage is done)
     </application>
 
 </manifest>

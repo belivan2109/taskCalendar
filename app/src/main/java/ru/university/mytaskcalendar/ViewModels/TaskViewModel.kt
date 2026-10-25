@@ -12,12 +12,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.university.mytaskcalendar.Repository.TaskRepository
 import ru.university.mytaskcalendar.Task
-<<<<<<< HEAD
-=======
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
->>>>>>> 4d14543 (6 stage is done)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
@@ -62,13 +59,6 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
     }
 
     fun addTask(task: Task) {
-<<<<<<< HEAD
-        viewModelScope.launch { repository.insert(task) }
-    }
-
-    fun updateTask(task: Task) {
-        viewModelScope.launch { repository.update(task) }
-=======
         viewModelScope.launch {
             repository.insert(task)
             refreshDatesIfNeeded()
@@ -80,22 +70,12 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
             repository.update(task)
             refreshDatesIfNeeded()
         }
->>>>>>> 4d14543 (6 stage is done)
     }
 
     fun deleteTask(task: Task) {
-        viewModelScope.launch { repository.delete(task) }
-    }
-
-    fun loadTask(taskId: Long, onLoaded: (Task?) -> Unit) {
         viewModelScope.launch {
-<<<<<<< HEAD
-            val task = repository.getTaskById(taskId)
-            onLoaded(task)
-=======
             repository.delete(task)
             refreshDatesIfNeeded()
->>>>>>> 4d14543 (6 stage is done)
         }
     }
 
