@@ -32,7 +32,6 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
     private val _datesWithTasks = MutableStateFlow<Set<String>>(emptySet())
     val datesWithTasks: StateFlow<Set<String>> = _datesWithTasks.asStateFlow()
 
-    // Храним префикс текущего открытого месяца в календаре (например, "2026-10")
     private var currentMonthPrefix: String? = null
 
     fun setSelectedDate(date: String) {
@@ -48,7 +47,6 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
         }
     }
 
-    // Вспомогательный метод, чтобы обновить точки после любых действий
     private fun refreshDatesIfNeeded() {
         currentMonthPrefix?.let { prefix ->
             viewModelScope.launch {
@@ -58,10 +56,11 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
         }
     }
 
-    fun addTask(task: Task) {
+    fun addTask(task: Task, onInserted: (Long) -> Unit) {
         viewModelScope.launch {
-            repository.insert(task)
+            val newId = repository.insert(task)
             refreshDatesIfNeeded()
+            onInserted(newId)
         }
     }
 

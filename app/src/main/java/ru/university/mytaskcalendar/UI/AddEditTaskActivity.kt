@@ -16,6 +16,7 @@ import ru.university.mytaskcalendar.Task
 import ru.university.mytaskcalendar.Repository.TaskRepository
 import ru.university.mytaskcalendar.ViewModels.TaskViewModel
 import ru.university.mytaskcalendar.ViewModels.TaskViewModelFactory
+import ru.university.mytaskcalendar.receiver.AlarmScheduler // Твой пакет с маленькой буквы
 import java.util.Calendar
 import java.util.Locale
 
@@ -62,16 +63,13 @@ class AddEditTaskActivity : AppCompatActivity() {
                 }
             }
         } else {
-            // РЕЖИМ СОЗДАНИЯ
             title = getString(R.string.title_add_task)
 
-            // Если дата передана из календаря — используем её, иначе сегодняшнюю
             val presetDate = intent.getStringExtra("preset_date")
             etDate.setText(presetDate ?: formatDate(Calendar.getInstance()))
             etTime.setText(formatTime(Calendar.getInstance()))
         }
 
-        // Клик по полю даты — открываем DatePickerDialog
         etDate.setOnClickListener {
             val cal = Calendar.getInstance()
             DatePickerDialog(
@@ -87,7 +85,6 @@ class AddEditTaskActivity : AppCompatActivity() {
             ).show()
         }
 
-        // Клик по полю времени — открываем TimePickerDialog
         etTime.setOnClickListener {
             val cal = Calendar.getInstance()
             TimePickerDialog(
@@ -104,7 +101,6 @@ class AddEditTaskActivity : AppCompatActivity() {
             ).show()
         }
 
-        // Кнопка «Сохранить»
         findViewById<Button>(R.id.btnSave).setOnClickListener {
             saveTask()
         }
@@ -124,9 +120,7 @@ class AddEditTaskActivity : AppCompatActivity() {
         }
         tilTitle.error = null
 
-        // 2. Валидация даты и времени: задача не может быть в прошлом.
-        // Пропускаем проверку для режима редактирования уже выполненной задачи —
-        // её дата может быть в прошлом, и это нормально.
+        // 2. Валидация даты и времени
         val skipDateTimeCheck = existingTask?.isDone == true && isDone
 
         if (!skipDateTimeCheck) {
@@ -137,7 +131,6 @@ class AddEditTaskActivity : AppCompatActivity() {
             }
         }
 
-        // 3. Сохранение
         if (existingTask != null) {
             val updated = existingTask!!.copy(
                 title = title,
@@ -147,6 +140,15 @@ class AddEditTaskActivity : AppCompatActivity() {
                 isDone = isDone
             )
             viewModel.updateTask(updated)
+
+
+            AlarmScheduler.cancel(this, updated)
+            if (!isDone) {
+                AlarmScheduler.schedule(this, updated)
+            }
+
+            Toast.makeText(this, R.string.task_saved, Toast.LENGTH_SHORT).show()
+            finish()
         } else {
             val newTask = Task(
                 title = title,
@@ -155,17 +157,17 @@ class AddEditTaskActivity : AppCompatActivity() {
                 time = time,
                 isDone = isDone
             )
-            viewModel.addTask(newTask)
+            viewModel.addTask(newTask) { newId ->
+                val taskWithId = newTask.copy(id = newId)
+                if (!isDone) {
+                    AlarmScheduler.schedule(this, taskWithId)
+                }
+                Toast.makeText(this, R.string.task_saved, Toast.LENGTH_SHORT).show()
+                finish()
+            }
         }
-
-        Toast.makeText(this, R.string.task_saved, Toast.LENGTH_SHORT).show()
-        finish()
     }
 
-    /**
-     * Проверяет, что выбранные дата и время не в прошлом.
-     * Возвращает текст ошибки или null, если всё в порядке.
-     */
     private fun validateDateTime(date: String, time: String): String? {
         val format = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
         format.isLenient = false
@@ -177,12 +179,10 @@ class AddEditTaskActivity : AppCompatActivity() {
         } ?: return getString(R.string.error_invalid_datetime)
 
         val now = Calendar.getInstance().time
-
         val diffMillis = selected.time - now.time
         if (diffMillis < -60_000L) {
             return getString(R.string.error_datetime_in_past)
         }
-
         return null
     }
 

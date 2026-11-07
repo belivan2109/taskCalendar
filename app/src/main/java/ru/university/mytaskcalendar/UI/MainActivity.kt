@@ -4,22 +4,24 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import ru.university.mytaskcalendar.Room.AppDatabase
 import ru.university.mytaskcalendar.R
+import ru.university.mytaskcalendar.Repository.TaskRepository
+import ru.university.mytaskcalendar.Room.AppDatabase
 import ru.university.mytaskcalendar.Task
 import ru.university.mytaskcalendar.TaskAdapter
-import ru.university.mytaskcalendar.Repository.TaskRepository
 import ru.university.mytaskcalendar.ViewModels.TaskViewModel
 import ru.university.mytaskcalendar.ViewModels.TaskViewModelFactory
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.appcompat.app.AlertDialog
+import ru.university.mytaskcalendar.receiver.AlarmScheduler
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var adapter: TaskAdapter
@@ -41,16 +43,16 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             },
             onSwipe = { task ->
-                showDeleteConfirmation(task)
             }
         )
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewTasks)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
+
         val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            0,  // без перетаскивания
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT  // свайп влево и вправо
+            0,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         ) {
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -62,15 +64,16 @@ class MainActivity : AppCompatActivity() {
                 val position = viewHolder.bindingAdapterPosition
                 val task = adapter.getTaskAt(position)
 
-
                 AlertDialog.Builder(this@MainActivity)
                     .setTitle(R.string.delete_title)
                     .setMessage(getString(R.string.delete_message, task.title))
                     .setPositiveButton(R.string.delete_yes) { _, _ ->
+                        // Отмена уведомления перед удалением
+                        AlarmScheduler.cancel(this@MainActivity, task)
                         viewModel.deleteTask(task)
                     }
                     .setNegativeButton(R.string.delete_no) { _, _ ->
-                        adapter.notifyItemChanged(position)  // возвращение карточки на место
+                        adapter.notifyItemChanged(position)
                     }
                     .setOnCancelListener {
                         adapter.notifyItemChanged(position)
@@ -79,7 +82,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
         itemTouchHelper.attachToRecyclerView(recyclerView)
-        // Подписка на StateFlow из ViewModel
+
         lifecycleScope.launch {
             viewModel.allTasks.collectLatest { tasks ->
                 adapter.submitList(tasks)
@@ -98,7 +101,8 @@ class MainActivity : AppCompatActivity() {
                             time = "10:00",
                             isDone = true
                         )
-                    )
+                    ) { }
+
                     viewModel.addTask(
                         Task(
                             title = "Разобрать структуру проекта",
@@ -106,7 +110,8 @@ class MainActivity : AppCompatActivity() {
                             date = "2026-10-01",
                             time = "14:00"
                         )
-                    )
+                    ) { }
+
                     viewModel.addTask(
                         Task(
                             title = "Изучить RecyclerView",
@@ -114,7 +119,8 @@ class MainActivity : AppCompatActivity() {
                             date = "2026-10-02",
                             time = "11:00"
                         )
-                    )
+                    ) { }
+
                     viewModel.addTask(
                         Task(
                             title = "Подключить Room",
@@ -122,7 +128,8 @@ class MainActivity : AppCompatActivity() {
                             date = "2026-10-03",
                             time = "09:00"
                         )
-                    )
+                    ) { }
+
                     viewModel.addTask(
                         Task(
                             title = "Перейти на MVVM",
@@ -130,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                             date = "2026-10-04",
                             time = "16:00"
                         )
-                    )
+                    ) { }
                 }
             }
         }
@@ -139,20 +146,10 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener {
             val intent = Intent(this, AddEditTaskActivity::class.java)
             startActivity(intent)
-
         }
+
         findViewById<Button>(R.id.btnDebug).setOnClickListener {
             startActivity(Intent(this, DebugActivity::class.java))
         }
-    }
-    private fun showDeleteConfirmation(task: Task) {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.delete_title)
-            .setMessage(getString(R.string.delete_message, task.title))
-            .setPositiveButton(R.string.delete_yes) { _, _ ->
-                viewModel.deleteTask(task)
-            }
-            .setNegativeButton(R.string.delete_no, null)
-            .show()
     }
 }
