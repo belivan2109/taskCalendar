@@ -16,12 +16,20 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
+            android:id="@+id/btnSettings"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_preferences"
+            app:tint="?attr/colorOnSurface" />
+
+        <ImageButton
             android:id="@+id/btnPrevMonth"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_media_previous"
-            app:tint="#000000" />
+            app:tint="?attr/colorOnSurface" />
 
         <TextView
             android:id="@+id/tvMonthYear"
@@ -30,7 +38,10 @@
             android:layout_weight="1"
             android:gravity="center"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary" />
+
+
 
         <ImageButton
             android:id="@+id/btnNextMonth"
@@ -38,11 +49,18 @@
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_media_next"
-            app:tint="#000000" />
+            app:tint="?attr/colorOnSurface" />
+
+        <ImageButton
+            android:id="@+id/btnGoToList"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_sort_by_size"
+            app:tint="?attr/colorOnSurface" />
 
     </LinearLayout>
 
-    <!-- Заголовки дней недели -->
     <LinearLayout
         android:id="@+id/weekHeader"
         android:layout_width="match_parent"
@@ -51,23 +69,22 @@
         app:layout_constraintTop_toBottomOf="@id/monthHeader">
 
         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:gravity="center" android:text="Пн" android:textSize="12sp" />
+            android:layout_weight="1" android:gravity="center" android:text="Пн" android:textSize="12sp" android:textColor="?android:attr/textColorSecondary" />
         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:gravity="center" android:text="Вт" android:textSize="12sp" />
+            android:layout_weight="1" android:gravity="center" android:text="Вт" android:textSize="12sp" android:textColor="?android:attr/textColorSecondary" />
         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:gravity="center" android:text="Ср" android:textSize="12sp" />
+            android:layout_weight="1" android:gravity="center" android:text="Ср" android:textSize="12sp" android:textColor="?android:attr/textColorSecondary" />
         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:gravity="center" android:text="Чт" android:textSize="12sp" />
+            android:layout_weight="1" android:gravity="center" android:text="Чт" android:textSize="12sp" android:textColor="?android:attr/textColorSecondary" />
         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:gravity="center" android:text="Пт" android:textSize="12sp" />
+            android:layout_weight="1" android:gravity="center" android:text="Пт" android:textSize="12sp" android:textColor="?android:attr/textColorSecondary" />
         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:gravity="center" android:text="Сб" android:textSize="12sp" />
+            android:layout_weight="1" android:gravity="center" android:text="Сб" android:textSize="12sp" android:textColor="?android:attr/textColorSecondary" />
         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:gravity="center" android:text="Вс" android:textSize="12sp" />
+            android:layout_weight="1" android:gravity="center" android:text="Вс" android:textSize="12sp" android:textColor="?android:attr/textColorSecondary" />
 
     </LinearLayout>
 
-    <!-- Сетка календаря -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewCalendar"
         android:layout_width="match_parent"
@@ -76,7 +93,6 @@
         android:nestedScrollingEnabled="false"
         app:layout_constraintTop_toBottomOf="@id/weekHeader" />
 
-    <!-- Заголовок «Задачи на <дата>» -->
     <TextView
         android:id="@+id/tvSelectedDate"
         android:layout_width="match_parent"
@@ -84,9 +100,9 @@
         android:padding="12dp"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:textColor="?android:attr/textColorPrimary"
         app:layout_constraintTop_toBottomOf="@id/recyclerViewCalendar" />
 
-    <!-- Список задач на выбранный день -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewTasks"
         android:layout_width="match_parent"
@@ -94,7 +110,19 @@
         app:layout_constraintTop_toBottomOf="@id/tvSelectedDate"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- FAB для добавления задачи на выбранную дату -->
+    <TextView
+        android:id="@+id/tvEmptyCalendarState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="На этот день задач нет"
+        android:textSize="16sp"
+        android:textColor="?android:attr/textColorSecondary"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/recyclerViewTasks"
+        app:layout_constraintBottom_toBottomOf="@id/recyclerViewTasks"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddOnDate"
         android:layout_width="wrap_content"

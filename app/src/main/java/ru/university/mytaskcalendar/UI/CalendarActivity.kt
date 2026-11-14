@@ -5,12 +5,14 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -43,17 +45,16 @@ class CalendarActivity : AppCompatActivity() {
     private var currentYear = 0
     private var currentMonth = 0
 
-    // Лаунчер для запроса разрешения на уведомления
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-
-    }
+    ) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calendar)
-
+        findViewById<ImageButton>(R.id.btnGoToList).setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
         requestNotificationPermission()
 
         val cal = Calendar.getInstance()
@@ -76,7 +77,6 @@ class CalendarActivity : AppCompatActivity() {
                 startActivity(intent)
             },
             onSwipe = { task ->
-
                 AlarmScheduler.cancel(this, task)
                 viewModel.deleteTask(task)
             }
@@ -129,9 +129,20 @@ class CalendarActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        findViewById<ImageButton>(R.id.btnSettings).setOnClickListener {
+            showThemeDialog()
+        }
+
         lifecycleScope.launch {
             viewModel.tasksForSelectedDate.collectLatest { tasks ->
                 tasksAdapter.submitList(tasks)
+
+                val tvEmpty = findViewById<TextView>(R.id.tvEmptyCalendarState)
+                if (tasks.isEmpty()) {
+                    tvEmpty.visibility = View.VISIBLE
+                } else {
+                    tvEmpty.visibility = View.GONE
+                }
             }
         }
 
@@ -151,6 +162,28 @@ class CalendarActivity : AppCompatActivity() {
 
         refreshCalendar()
     }
+    private fun showThemeDialog() {
+        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+        val currentMode = prefs.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+
+        val modes = arrayOf("Как в системе", "Светлая", "Тёмная")
+        val modeValues = intArrayOf(
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
+            AppCompatDelegate.MODE_NIGHT_NO,
+            AppCompatDelegate.MODE_NIGHT_YES
+        )
+        val checkedItem = modeValues.indexOf(currentMode)
+
+        AlertDialog.Builder(this)
+            .setTitle("Тема оформления")
+            .setSingleChoiceItems(modes, checkedItem) { dialog, which ->
+                val selectedMode = modeValues[which]
+                prefs.edit().putInt("theme_mode", selectedMode).apply()
+                AppCompatDelegate.setDefaultNightMode(selectedMode)
+                dialog.dismiss()
+            }
+            .show()
+    }
 
     override fun onResume() {
         super.onResume()
@@ -164,7 +197,6 @@ class CalendarActivity : AppCompatActivity() {
             .setTitle(R.string.delete_title)
             .setMessage(getString(R.string.delete_message, task.title))
             .setPositiveButton(R.string.delete_yes) { _, _ ->
-                // Отменяем будильник перед удалением из базы!
                 AlarmScheduler.cancel(this, task)
                 viewModel.deleteTask(task)
             }

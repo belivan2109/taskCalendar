@@ -9,11 +9,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
 import ru.university.mytaskcalendar.R
 
 data class CalendarDay(
-    val dayNumber: Int?,          // null для пустых ячеек
-    val dateString: String?,      // "yyyy-MM-dd", null для пустых
+    val dayNumber: Int?,
+    val dateString: String?,
     val hasTasks: Boolean = false,
     val isSelected: Boolean = false,
     val isToday: Boolean = false
@@ -26,7 +27,6 @@ class CalendarAdapter(
     companion object {
         private val DIFF = object : DiffUtil.ItemCallback<CalendarDay>() {
             override fun areItemsTheSame(old: CalendarDay, new: CalendarDay): Boolean {
-                // Если обе ячейки пустые (без даты) — считаем их одинаковыми
                 if (old.dateString == null && new.dateString == null) return true
                 return old.dateString == new.dateString
             }
@@ -51,7 +51,6 @@ class CalendarAdapter(
     override fun onBindViewHolder(holder: DayViewHolder, position: Int) {
         val day = getItem(position)
 
-        // Если ячейка пустая (сдвиг в начале месяца)
         if (day.dayNumber == null) {
             holder.tvDay.text = ""
             holder.tvDay.setBackgroundColor(Color.TRANSPARENT)
@@ -60,27 +59,24 @@ class CalendarAdapter(
             return
         }
 
-        // Устанавливаем число
         holder.tvDay.text = day.dayNumber.toString()
 
-        // Настраиваем цвет фона и текста (выделение)
+        val defaultTextColor = MaterialColors.getColor(holder.tvDay, android.R.attr.textColorPrimary)
+        val selectedBgColor = MaterialColors.getColor(holder.tvDay, com.google.android.material.R.attr.colorPrimary)
+        val selectedTextColor = MaterialColors.getColor(holder.tvDay, com.google.android.material.R.attr.colorOnPrimary)
+
         if (day.isSelected) {
-            // Выбранный день — фиолетовый фон, белый текст
-            holder.tvDay.setBackgroundColor(Color.parseColor("#6200EE"))
-            holder.tvDay.setTextColor(Color.WHITE)
+            holder.tvDay.setBackgroundColor(selectedBgColor)
+            holder.tvDay.setTextColor(selectedTextColor)
         } else {
-            // Обычный день — прозрачный фон, чёрный текст
             holder.tvDay.setBackgroundColor(Color.TRANSPARENT)
-            holder.tvDay.setTextColor(Color.BLACK)
+            holder.tvDay.setTextColor(defaultTextColor)
         }
 
-        // Если это сегодняшний день — делаем текст жирным
         holder.tvDay.setTypeface(null, if (day.isToday) Typeface.BOLD else Typeface.NORMAL)
 
-        // Показываем или скрываем точку (если есть задачи)
         holder.tvDot.visibility = if (day.hasTasks) View.VISIBLE else View.INVISIBLE
 
-        // Обработчик клика по дню
         holder.itemView.setOnClickListener {
             onDayClick(day)
         }

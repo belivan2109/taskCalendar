@@ -16,7 +16,6 @@
         <receiver
             android:name=".receiver.ReminderReceiver"
             android:exported="false" />
-        <!-- Календарь теперь главный экран (точка входа) -->
         <activity
             android:name=".ui.CalendarActivity"
             android:exported="true">
@@ -26,7 +25,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Остальные экраны (открываются только изнутри приложения) -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="false" />

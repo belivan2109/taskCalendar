@@ -14,6 +14,9 @@ class TaskApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+        val savedMode = prefs.getInt("theme_mode", androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(savedMode)
         createNotificationChannel()
     }
 

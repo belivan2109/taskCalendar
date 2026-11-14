@@ -113,14 +113,12 @@ class AddEditTaskActivity : AppCompatActivity() {
         val time = etTime.text?.toString().orEmpty()
         val isDone = switchDone.isChecked
 
-        // 1. Валидация заголовка
         if (title.isEmpty()) {
             tilTitle.error = getString(R.string.error_title_required)
             return
         }
         tilTitle.error = null
 
-        // 2. Валидация даты и времени
         val skipDateTimeCheck = existingTask?.isDone == true && isDone
 
         if (!skipDateTimeCheck) {

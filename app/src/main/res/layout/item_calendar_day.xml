@@ -13,8 +13,7 @@
         android:layout_height="40dp"
         android:gravity="center"
         android:textSize="16sp"
-        android:textColor="#000000" />
-
+        android:textColor="?android:attr/textColorPrimary" />
     <View
         android:id="@+id/tvDot"
         android:layout_width="6dp"

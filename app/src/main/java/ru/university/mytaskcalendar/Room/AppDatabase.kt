@@ -14,7 +14,6 @@ import ru.university.mytaskcalendar.Task
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun taskDao(): TaskDao
-//Singleton Pattern
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
